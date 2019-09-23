@@ -1,0 +1,23 @@
+## start ec2 instance
+
+import boto3
+ec2 = boto3.resource('ec2')
+
+def lambda_handler(event, context):
+    filters = [{
+            'Name': 'tag:AutoOn9AM',
+            'Values': ['True']
+        },
+        {
+            'Name': 'instance-state-name', 
+            'Values': ['stopped']
+        }
+    ]
+    
+    instances = ec2.instances.filter(Filters=filters)
+
+    stoppedInstances = [instance.id for instance in instances]
+    
+    if len(stoppedInstances) > 0:
+        shuttingDown = ec2.instances.filter(InstanceIds=stoppedInstances).start()
+        print instance.id + " started"
